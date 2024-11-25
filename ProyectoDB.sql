@@ -1,5 +1,5 @@
 --------------------------------------------------------
--- Archivo creado  - martes-noviembre-19-2024   
+-- Archivo creado  - lunes-noviembre-25-2024   
 --------------------------------------------------------
 --------------------------------------------------------
 --  DDL for Table ARMA
@@ -206,9 +206,9 @@ Insert into USUARIO01.CLASES (ID_CLASE,NOMBRE_CLASE) values ('02_MAG','MAGO');
 Insert into USUARIO01.CLASES (ID_CLASE,NOMBRE_CLASE) values ('03_SAMU','SAMURAI');
 REM INSERTING into USUARIO01.MUNDO
 SET DEFINE OFF;
-Insert into USUARIO01.MUNDO (ID_MUNDO,NOMBRE,FONDO,PISO,ID_CATEGORIA) values ('1','MUNDO BOSQUE 1-1','fondosimple.png','PISO1','LENG');
-Insert into USUARIO01.MUNDO (ID_MUNDO,NOMBRE,FONDO,PISO,ID_CATEGORIA) values ('2','MUNDO BOSQUE 1-2','fondopradera.png','PISO2','BIO');
-Insert into USUARIO01.MUNDO (ID_MUNDO,NOMBRE,FONDO,PISO,ID_CATEGORIA) values ('3','MUNDO BOSQUE 1-3','fondomontaña.png','PISO3','MATM');
+Insert into USUARIO01.MUNDO (ID_MUNDO,NOMBRE,FONDO,PISO,ID_CATEGORIA) values ('1','MUNDO CAMPO 1-1','fondosimple.png','pisosimple.png','LENG');
+Insert into USUARIO01.MUNDO (ID_MUNDO,NOMBRE,FONDO,PISO,ID_CATEGORIA) values ('2','MUNDO PRADERA 1-2','fondopradera.png','pisopradera.png','BIO');
+Insert into USUARIO01.MUNDO (ID_MUNDO,NOMBRE,FONDO,PISO,ID_CATEGORIA) values ('3','MUNDO MONTAÑA 1-3','fondomontaña.png','pisomontaña.png','MATM');
 REM INSERTING into USUARIO01.NPCS
 SET DEFINE OFF;
 Insert into USUARIO01.NPCS (ID_NPC,NOMBRE_NPC,VIDA,FUERZA,DEFENSA) values ('01_LOBO','LOBO','2000','200','40');
@@ -221,6 +221,7 @@ REM INSERTING into USUARIO01.PREGUNTAS_Y_RESPUESTAS
 SET DEFINE OFF;
 Insert into USUARIO01.PREGUNTAS_Y_RESPUESTAS (ID_PREYRES,PREGUNTAS,RESPUESTAS,ID_CATEGORIA) values ('0','¿Qué es un sinónimo?',' Una palabra que tiene un significado similar a otra.','LENG');
 Insert into USUARIO01.PREGUNTAS_Y_RESPUESTAS (ID_PREYRES,PREGUNTAS,RESPUESTAS,ID_CATEGORIA) values ('1','¿Qué es un sustantivo propio?',' Es un sustantivo que nombra a un ser o lugar en específico','LENG');
+Insert into USUARIO01.PREGUNTAS_Y_RESPUESTAS (ID_PREYRES,PREGUNTAS,RESPUESTAS,ID_CATEGORIA) values ('2','¿Cuál es la principal función de las raíces en las plantas?','Absorber agua y nutrientes del suelo','BIO');
 REM INSERTING into USUARIO01.PUNTAJES
 SET DEFINE OFF;
 Insert into USUARIO01.PUNTAJES (ID_USER,ID_MUNDO,PUNTAJE) values ('1','1','1000');
@@ -228,6 +229,7 @@ Insert into USUARIO01.PUNTAJES (ID_USER,ID_MUNDO,PUNTAJE) values ('1','2','1300'
 Insert into USUARIO01.PUNTAJES (ID_USER,ID_MUNDO,PUNTAJE) values ('4','3','2000');
 Insert into USUARIO01.PUNTAJES (ID_USER,ID_MUNDO,PUNTAJE) values ('1','3','1100');
 Insert into USUARIO01.PUNTAJES (ID_USER,ID_MUNDO,PUNTAJE) values ('1','3','1100');
+Insert into USUARIO01.PUNTAJES (ID_USER,ID_MUNDO,PUNTAJE) values ('1','3','0');
 REM INSERTING into USUARIO01.REPUESTAS_FALSAS
 SET DEFINE OFF;
 Insert into USUARIO01.REPUESTAS_FALSAS (RESPUESTA_FALSA,ID_FALSA,ID_CATEGORIA,ID_PREGUNTA) values ('Una palabra que tiene un significado opuesto a otra','1','LENG','0');
@@ -236,6 +238,9 @@ Insert into USUARIO01.REPUESTAS_FALSAS (RESPUESTA_FALSA,ID_FALSA,ID_CATEGORIA,ID
 Insert into USUARIO01.REPUESTAS_FALSAS (RESPUESTA_FALSA,ID_FALSA,ID_CATEGORIA,ID_PREGUNTA) values ('Es un sustantivo que describe cualidades de un objeto','4','LENG','1');
 Insert into USUARIO01.REPUESTAS_FALSAS (RESPUESTA_FALSA,ID_FALSA,ID_CATEGORIA,ID_PREGUNTA) values ('Es un sustantivo que siempre termina en vocal','5','LENG','1');
 Insert into USUARIO01.REPUESTAS_FALSAS (RESPUESTA_FALSA,ID_FALSA,ID_CATEGORIA,ID_PREGUNTA) values ('Es un sustantivo que no tiene género','6','LENG','1');
+Insert into USUARIO01.REPUESTAS_FALSAS (RESPUESTA_FALSA,ID_FALSA,ID_CATEGORIA,ID_PREGUNTA) values ('Producir oxígeno mediante la fotosíntesis','7','BIO','2');
+Insert into USUARIO01.REPUESTAS_FALSAS (RESPUESTA_FALSA,ID_FALSA,ID_CATEGORIA,ID_PREGUNTA) values ('Transportar el alimento a las hojas','8','BIO','2');
+Insert into USUARIO01.REPUESTAS_FALSAS (RESPUESTA_FALSA,ID_FALSA,ID_CATEGORIA,ID_PREGUNTA) values ('Proteger a la planta de los depredadores','9','BIO','2');
 REM INSERTING into USUARIO01.USUARIOS
 SET DEFINE OFF;
 Insert into USUARIO01.USUARIOS (ID_USER,NOMBRE_USER,CONTRA_USER,ROL) values ('1','jolfry','jol123','Profesor');
@@ -430,6 +435,39 @@ Insert into USUARIO01.USUARIOS (ID_USER,NOMBRE_USER,CONTRA_USER,ROL) values ('10
   BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
   TABLESPACE "PROYECTO_CURSO" ;
 --------------------------------------------------------
+--  DDL for Trigger TR_DELETE_PRE_Y_RES
+--------------------------------------------------------
+
+  CREATE OR REPLACE NONEDITIONABLE TRIGGER "USUARIO01"."TR_DELETE_PRE_Y_RES" 
+BEFORE DELETE
+ON preguntas_y_respuestas
+FOR EACH ROW
+BEGIN 
+DELETE REPUESTAS_FALSAS WHERE ID_PREGUNTA = :old.id_preyres;
+END TR_DELETE_PRE_Y_RES;
+/
+ALTER TRIGGER "USUARIO01"."TR_DELETE_PRE_Y_RES" ENABLE;
+--------------------------------------------------------
+--  DDL for Trigger TR_DELETE_PRE_Y_RES_INSERT_RESPUESTA
+--------------------------------------------------------
+
+  CREATE OR REPLACE NONEDITIONABLE TRIGGER "USUARIO01"."TR_DELETE_PRE_Y_RES_INSERT_RESPUESTA" 
+BEFORE DELETE
+ON preguntas_y_respuestas
+FOR EACH ROW
+DECLARE
+id_f REPUESTAS_FALSAS.ID_FALSA%TYPE;
+BEGIN
+SELECT MAX(ID_FALSA)+1 INTO id_f
+FROM  REPUESTAS_FALSAS;
+
+INSERT INTO REPUESTAS_FALSAS(respuesta_falsa,id_falsa,id_categoria,ID_PREGUNTA) 
+VALUES(:OLD.RESPUESTAS,id_f,:OLD.ID_CATEGORIA,0);
+
+END TR_DELETE_PRE_Y_RES_INSERT_RESPUESTA;
+/
+ALTER TRIGGER "USUARIO01"."TR_DELETE_PRE_Y_RES_INSERT_RESPUESTA" ENABLE;
+--------------------------------------------------------
 --  DDL for Trigger TR_DELETE_USUARIO
 --------------------------------------------------------
 
@@ -491,6 +529,39 @@ WHERE id_user = :NEW.id_user;
 END TR_RESTRICION_PERSONAJES;
 /
 ALTER TRIGGER "USUARIO01"."TR_RESTRICION_PERSONAJES" ENABLE;
+--------------------------------------------------------
+--  DDL for Trigger TR_DELETE_PRE_Y_RES
+--------------------------------------------------------
+
+  CREATE OR REPLACE NONEDITIONABLE TRIGGER "USUARIO01"."TR_DELETE_PRE_Y_RES" 
+BEFORE DELETE
+ON preguntas_y_respuestas
+FOR EACH ROW
+BEGIN 
+DELETE REPUESTAS_FALSAS WHERE ID_PREGUNTA = :old.id_preyres;
+END TR_DELETE_PRE_Y_RES;
+/
+ALTER TRIGGER "USUARIO01"."TR_DELETE_PRE_Y_RES" ENABLE;
+--------------------------------------------------------
+--  DDL for Trigger TR_DELETE_PRE_Y_RES_INSERT_RESPUESTA
+--------------------------------------------------------
+
+  CREATE OR REPLACE NONEDITIONABLE TRIGGER "USUARIO01"."TR_DELETE_PRE_Y_RES_INSERT_RESPUESTA" 
+BEFORE DELETE
+ON preguntas_y_respuestas
+FOR EACH ROW
+DECLARE
+id_f REPUESTAS_FALSAS.ID_FALSA%TYPE;
+BEGIN
+SELECT MAX(ID_FALSA)+1 INTO id_f
+FROM  REPUESTAS_FALSAS;
+
+INSERT INTO REPUESTAS_FALSAS(respuesta_falsa,id_falsa,id_categoria,ID_PREGUNTA) 
+VALUES(:OLD.RESPUESTAS,id_f,:OLD.ID_CATEGORIA,0);
+
+END TR_DELETE_PRE_Y_RES_INSERT_RESPUESTA;
+/
+ALTER TRIGGER "USUARIO01"."TR_DELETE_PRE_Y_RES_INSERT_RESPUESTA" ENABLE;
 --------------------------------------------------------
 --  DDL for Trigger TR_DELETE_USUARIO
 --------------------------------------------------------
@@ -528,6 +599,22 @@ END PR_ACTUALIZAR_USER;
 
 /
 --------------------------------------------------------
+--  DDL for Procedure PR_DELETE_PREGUNTAS_Y_RESPUESTAS
+--------------------------------------------------------
+set define off;
+
+  CREATE OR REPLACE NONEDITIONABLE PROCEDURE "USUARIO01"."PR_DELETE_PREGUNTAS_Y_RESPUESTAS" (
+    id_pre PREGUNTAS_Y_RESPUESTAS.ID_PREYRES%TYPE
+)IS
+
+BEGIN
+DELETE PREGUNTAS_Y_RESPUESTAS 
+WHERE ID_PREYRES = id_pre;
+COMMIT;
+END PR_DELETE_PREGUNTAS_Y_RESPUESTAS;
+
+/
+--------------------------------------------------------
 --  DDL for Package PKG_INSERT
 --------------------------------------------------------
 
@@ -541,6 +628,8 @@ END PR_ACTUALIZAR_USER;
     id_mundo MUNDO.ID_MUNDO%TYPE,puntaje PUNTAJES.puntaje%TYPE);
     PROCEDURE PR_INSERT_USUARIO(id_usuario USUARIOS.ID_USER%TYPE, nombre USUARIOS.NOMBRE_USER%TYPE,
     contra  USUARIOS.CONTRA_USER%TYPE, rol USUARIOS.ROL%TYPE);
+    PROCEDURE PR_INSERT_RESPUESTAS_FALSAS(repuesta REPUESTAS_FALSAS.REsPUESTA_FALSA%TYPE,id_falsa REPUESTAS_FALSAS.ID_FALSA%TYPE,
+    id_cate REPUESTAS_FALSAS.ID_CATEGORIA%TYPE,id_pre REPUESTAS_FALSAS.ID_PREGUNTA%TYPE);
 END PKG_INSERT;
 
 /
@@ -592,6 +681,15 @@ END PKG_INSERT;
         INSERT INTO usuarios (id_user, nombre_user, contra_user, Rol) VALUES (id_usuario, nombre, contra, rol);
         COMMIT;
     END PR_INSERT_USUARIO;
+
+    PROCEDURE PR_INSERT_RESPUESTAS_FALSAS(repuesta REPUESTAS_FALSAS.REsPUESTA_FALSA%TYPE,id_falsa REPUESTAS_FALSAS.ID_FALSA%TYPE,
+    id_cate REPUESTAS_FALSAS.ID_CATEGORIA%TYPE,id_pre REPUESTAS_FALSAS.ID_PREGUNTA%TYPE)
+    IS
+    BEGIN
+        INSERT INTO REPUESTAS_FALSAS(respuesta_falsa,id_falsa,id_categoria,ID_PREGUNTA) 
+        VALUES(repuesta,id_falsa,id_cate,id_pre);
+        COMMIT;
+    END PR_INSERT_RESPUESTAS_FALSAS;
 END PKG_INSERT;
 
 /
@@ -628,6 +726,22 @@ BEGIN
 
     return resultado;
 END FX_CONSULTAR_MUNDO;
+
+/
+--------------------------------------------------------
+--  DDL for Function FX_CONSULTAR_NOMBRE_CATEGORIAS
+--------------------------------------------------------
+
+  CREATE OR REPLACE NONEDITIONABLE FUNCTION "USUARIO01"."FX_CONSULTAR_NOMBRE_CATEGORIAS" 
+RETURN SYS_REFCURSOR
+IS
+resultado SYS_REFCURSOR;
+BEGIN 
+    OPEN resultado FOR
+    SELECT NOMBRE_CATEGORIA FROM CATEGORIAS;
+
+    return resultado;
+END FX_CONSULTAR_NOMBRE_CATEGORIAS;
 
 /
 --------------------------------------------------------
@@ -702,6 +816,25 @@ END FX_CONSULTAR_PREGUNTASYRESPUESTAS;
 
 /
 --------------------------------------------------------
+--  DDL for Function FX_CONSULTAR_PREYRES_BY_CATEGORIA
+--------------------------------------------------------
+
+  CREATE OR REPLACE NONEDITIONABLE FUNCTION "USUARIO01"."FX_CONSULTAR_PREYRES_BY_CATEGORIA" 
+(id_cate PREGUNTAS_Y_RESPUESTAS.ID_CATEGORIA%TYPE)
+RETURN SYS_REFCURSOR
+IS
+resultado SYS_REFCURSOR;
+BEGIN 
+    OPEN resultado FOR
+    SELECT * FROM PREGUNTAS_Y_RESPUESTAS
+    WHERE ID_CATEGORIA = id_cate
+    ORDER BY id_preyres;
+
+    return resultado;
+END FX_CONSULTAR_PREYRES_BY_CATEGORIA;
+
+/
+--------------------------------------------------------
 --  DDL for Function FX_CONSULTARPUNTAJES
 --------------------------------------------------------
 
@@ -734,10 +867,28 @@ resultado SYS_REFCURSOR;
 BEGIN 
     OPEN resultado FOR
     SELECT * FROM REPUESTAS_FALSAS
-    WHERE id_pregunta=id_preg;
+    WHERE id_pregunta=id_preg
+    ORDER BY id_falsa;
     return resultado;
 
 END FX_CONSULTAR_RESPUESTAS_FALSAS;
+
+/
+--------------------------------------------------------
+--  DDL for Function FX_CONSULTAR_TODAS_RESPUESTAS_FALSAS
+--------------------------------------------------------
+
+  CREATE OR REPLACE NONEDITIONABLE FUNCTION "USUARIO01"."FX_CONSULTAR_TODAS_RESPUESTAS_FALSAS" 
+RETURN SYS_REFCURSOR
+IS
+resultado SYS_REFCURSOR;
+BEGIN 
+    OPEN resultado FOR
+    SELECT * FROM REPUESTAS_FALSAS
+    ORDER BY id_falsa;
+    return resultado;
+
+END FX_CONSULTAR_TODAS_RESPUESTAS_FALSAS;
 
 /
 --------------------------------------------------------
