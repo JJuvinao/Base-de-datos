@@ -184,8 +184,6 @@ Insert into USUARIO01.ARMA (ID_ARMA,FUERZA,NOMBRE_ARMA) values ('3','43','BASTON
 REM INSERTING into USUARIO01.ASIGNARPERSONAJE
 SET DEFINE OFF;
 Insert into USUARIO01.ASIGNARPERSONAJE (ID_USER,ID_PERSONAJE) values ('4','10');
-Insert into USUARIO01.ASIGNARPERSONAJE (ID_USER,ID_PERSONAJE) values ('10','10');
-Insert into USUARIO01.ASIGNARPERSONAJE (ID_USER,ID_PERSONAJE) values ('10','20');
 Insert into USUARIO01.ASIGNARPERSONAJE (ID_USER,ID_PERSONAJE) values ('1','10');
 Insert into USUARIO01.ASIGNARPERSONAJE (ID_USER,ID_PERSONAJE) values ('1','20');
 Insert into USUARIO01.ASIGNARPERSONAJE (ID_USER,ID_PERSONAJE) values ('1','30');
@@ -250,10 +248,9 @@ Insert into USUARIO01.USUARIOS (ID_USER,NOMBRE_USER,CONTRA_USER,ROL) values ('4'
 Insert into USUARIO01.USUARIOS (ID_USER,NOMBRE_USER,CONTRA_USER,ROL) values ('5','gabriel','gabo123','Estudiante');
 Insert into USUARIO01.USUARIOS (ID_USER,NOMBRE_USER,CONTRA_USER,ROL) values ('6','erre','ctr123','Estudiante');
 Insert into USUARIO01.USUARIOS (ID_USER,NOMBRE_USER,CONTRA_USER,ROL) values ('7','erre2','123','Estudiante');
-Insert into USUARIO01.USUARIOS (ID_USER,NOMBRE_USER,CONTRA_USER,ROL) values ('8','luis','luis123','Estudiante');
+Insert into USUARIO01.USUARIOS (ID_USER,NOMBRE_USER,CONTRA_USER,ROL) values ('8','luis','ll','Estudiante');
 Insert into USUARIO01.USUARIOS (ID_USER,NOMBRE_USER,CONTRA_USER,ROL) values ('11','andres','and123','Profesor');
 Insert into USUARIO01.USUARIOS (ID_USER,NOMBRE_USER,CONTRA_USER,ROL) values ('9','juvinao','juvi123','Estudiante');
-Insert into USUARIO01.USUARIOS (ID_USER,NOMBRE_USER,CONTRA_USER,ROL) values ('10','Jolfry','jol123e','Estudiante');
 --------------------------------------------------------
 --  DDL for Index ARMA_PK
 --------------------------------------------------------
@@ -584,16 +581,20 @@ ALTER TRIGGER "USUARIO01"."TR_DELETE_USUARIO" ENABLE;
 set define off;
 
   CREATE OR REPLACE NONEDITIONABLE PROCEDURE "USUARIO01"."PR_ACTUALIZAR_USER" (
-    id_user USUARIOS.ID_USER%TYPE, nombre_use USUARIOS.NOMBRE_USER%TYPE,
-    contra USUARIOS.CONTRA_USER%TYPE,rol USUARIOS.ROL%TYPE
+    id_u USUARIOS.ID_USER%TYPE,contra USUARIOS.CONTRA_USER%TYPE
 )
 IS
-
+v_validar number;
 BEGIN
+SELECT COUNT(ID_USER)INTO v_validar
+FROM usuarios WHERE ID_USER = id_u;
 
-UPDATE usuarios SET NOMBRE_USER = nombre_use, ROL = rol, CONTRA_USER = contra 
-WHERE ID_USER = id_user;
-
+IF v_validar = 1 THEN
+UPDATE usuarios SET CONTRA_USER = contra 
+WHERE ID_USER = id_u;
+ELSE
+RAISE_APPLICATION_ERROR(-20001, 'NO SE ENCONTRO AL USUARIO');
+END IF;
 COMMIT;
 END PR_ACTUALIZAR_USER;
 
@@ -612,6 +613,29 @@ DELETE PREGUNTAS_Y_RESPUESTAS
 WHERE ID_PREYRES = id_pre;
 COMMIT;
 END PR_DELETE_PREGUNTAS_Y_RESPUESTAS;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure PR_ELIMINAR_USER
+--------------------------------------------------------
+set define off;
+
+  CREATE OR REPLACE NONEDITIONABLE PROCEDURE "USUARIO01"."PR_ELIMINAR_USER" (
+    id_u USUARIOS.ID_USER%TYPE
+)
+IS
+v_validar number;
+BEGIN
+SELECT COUNT(ID_USER)INTO v_validar
+FROM usuarios WHERE ID_USER = id_u;
+
+IF v_validar = 1 THEN
+DELETE usuarios WHERE ID_USER = id_u;
+ELSE
+RAISE_APPLICATION_ERROR(-20001, 'NO SE ENCONTRO AL USUARIO');
+END IF;
+COMMIT;
+END PR_ELIMINAR_USER;
 
 /
 --------------------------------------------------------
